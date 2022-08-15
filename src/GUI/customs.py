@@ -1,15 +1,20 @@
 from PySide6.QtWidgets import (
-    QPushButton,
+    QCheckBox,
+    QComboBox,
     QDialog,
-    QFormLayout,
-    QLineEdit,
     QDialogButtonBox,
-    QVBoxLayout,
+    QFileDialog,
+    QFormLayout,
     QLabel,
-    QCheckBox
+    QLineEdit,
+    QPushButton,
+    QVBoxLayout,
 )
 from PySide6.QtCore import QSize, Qt
 from PySide6 import QtGui
+from config import RIOT_GAMES_PATH
+
+from utils import LANGUAGES
 
 class AccountButton(QPushButton):
 
@@ -114,6 +119,7 @@ class AddAccountModal(QDialog):
 
 
 class DeleteAccountModal(QDialog):
+
     def __init__(self, parent):
         super(DeleteAccountModal, self).__init__(parent)
         self.manager = parent.manager
@@ -151,3 +157,54 @@ class DeleteAccountModal(QDialog):
 
     def cancel(self):
         self.close()
+
+
+class ConfigureModal(QDialog):
+
+    def __init__(self, parent):
+        super(ConfigureModal, self).__init__(parent)
+        self.manager = parent.manager
+        self.setModal(True)
+        self.setWindowTitle("Configurations")
+        self.languages_list = QComboBox()
+        self.languages_list.addItems(list(LANGUAGES.keys()))
+        self.languages_list.setCurrentText(self.manager.language)
+
+        self.path_button = QPushButton(icon=QtGui.QIcon('..\\assets\\directory_icon.png'))
+        self.path_button.clicked.connect(self.open_file_explorer)
+        self.path = QLabel(RIOT_GAMES_PATH)
+
+        self.setUpUI()
+
+    def setUpUI(self):
+        formLayout = QFormLayout()
+
+        formLayout.addRow("Language:", self.languages_list)
+        formLayout.addRow(QLabel())
+        formLayout.addRow(QLabel('Riot Games folder path'))
+        formLayout.addRow(self.path_button, self.path)
+
+        buttons = QDialogButtonBox(QDialogButtonBox.Save | QDialogButtonBox.Cancel)
+        buttons.accepted.connect(self.save)
+        buttons.rejected.connect(self.cancel)
+
+        formLayout.addRow(buttons)
+
+        self.setLayout(formLayout)
+
+    def save(self):
+        self.manager.change_language(self.languages_list.currentText())
+        self.close()
+
+    def cancel(self):
+        self.close()
+
+    def open_file_explorer(self):
+        dirname = QFileDialog.getExistingDirectory(self,
+                                                    'Riot Games directory path',
+                                                    RIOT_GAMES_PATH,
+                                                    QFileDialog.ShowDirsOnly | QFileDialog.DontResolveSymlinks)
+
+        if dirname:
+            self.path.setText(dirname)
+            RIOT_GAMES_PATH = dirname

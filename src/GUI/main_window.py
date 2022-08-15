@@ -9,13 +9,15 @@ from Manager.Manager import Manager
 from GUI.customs import (
     AccountButton,
     AddAccountButton,
-    ConfigureButton,
-    DeleteAccountButton,
-    RefreshButton,
-    GithubButton,
     AddAccountModal,
-    DeleteAccountModal
+    ConfigureButton,
+    ConfigureModal,
+    DeleteAccountButton,
+    DeleteAccountModal,
+    GithubButton,
+    RefreshButton,
 )
+
 from utils import debug
 
 class GUIManager(QMainWindow):
@@ -80,14 +82,16 @@ class GUIManager(QMainWindow):
         refresh_button.clicked.connect(self.refresh)
         layout.addWidget(refresh_button)
 
-        # TODO: add posibility to change language
-        # layout.addWidget(ConfigureButton())
+        configure_button = ConfigureButton()
+        configure_button.clicked.connect(self.configure_modal)
+        layout.addWidget(configure_button)
+
+        layout.addStretch()
 
         github_link = GithubButton()
         github_link.clicked.connect(self.open_github)
         layout.addWidget(github_link)
 
-        layout.addStretch()
         return layout
 
     def acc_clicked(self):
@@ -108,6 +112,10 @@ class GUIManager(QMainWindow):
         dialog = DeleteAccountModal(self)
         dialog.exec_()
         self.refresh()
+
+    def configure_modal(self):
+        dialog = ConfigureModal(self)
+        dialog.exec_()
     
     def refresh(self):
         self.manager.sort_data()

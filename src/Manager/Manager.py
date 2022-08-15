@@ -2,13 +2,14 @@ from time import sleep
 import os
 import json
 import subprocess
+import yaml
 
 import psutil
 import pyautogui
 from pyautogui import ImageNotFoundException
 
-from utils import debug
-from config import DATA_PATH, LEAGUE_PATH
+from utils import LANGUAGES, debug
+from config import DATA_PATH, LEAGUE_PATH, CONFIG_PATH
 
 class Manager:
 
@@ -18,6 +19,8 @@ class Manager:
     def __init__(self):
         self.data = self.load_json()
         self.sort_data()
+        self.arguments = []
+        self.language = self.get_current_language()
 
     def run(self, login, password):
         # clean up processes and start from scratch, its easier            
@@ -31,7 +34,7 @@ class Manager:
         self.confirm()
     
     def run_league_client(self):
-        x = subprocess.Popen([LEAGUE_PATH])
+        x = subprocess.Popen([LEAGUE_PATH, *self.arguments])
 
         return x.pid
 
@@ -40,7 +43,7 @@ class Manager:
         menu_icon = None
         while menu_icon is None:
             try:
-                menu_icon = pyautogui.locateOnScreen('..\\assets\\main_menu.png', grayscale=False)
+                menu_icon = pyautogui.locateOnScreen('..\\assets\\main_menu.png', grayscale=False, confidence=0.9)
             except ImageNotFoundException:
                 sleep(0.5)
 
@@ -137,3 +140,29 @@ class Manager:
 
     def sort_data(self):
         self.data = dict(sorted(self.data.items()))
+
+    def change_language(self, language):
+        if language == self.language:
+            debug('Language is the same as the current language')
+            return
+
+        self.arguments.append(f'–locale={LANGUAGES[language]}')
+
+        with open(CONFIG_PATH, 'r') as f:
+            configs = yaml.safe_load(f)
+        
+        configs['install']['globals']['locale'] = LANGUAGES[language]
+        configs['install']['patcher']['locales'] = [LANGUAGES[language]]
+
+        with open(CONFIG_PATH, 'w') as f:
+            yaml.dump(configs, f)
+
+    def get_current_language(self):
+        with open(CONFIG_PATH, 'r') as f:
+            configs = yaml.safe_load(f)
+            language = configs['install']['globals']['locale']
+
+        for key, value in LANGUAGES.items():
+            if value == language:
+                return key
+        return 'English'

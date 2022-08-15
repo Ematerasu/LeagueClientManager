@@ -1,4 +1,4 @@
-# League Client Manager v1.1
+# League Client Manager v1.2
 
 ## What is it?
 App that automates logging in League of Legends client. Especially useful when changing accounts.
@@ -13,13 +13,28 @@ combinations so this app is quite useful for me. Hopefully it will be useful for
     * pyautogui
     * PySide6
 
+## How to run locally
+I intend to make an exe file from this. But if you clone this repo you need to install the requirements with
+```
+pip install -r requirements.txt
+```
+
+And then you can run from src directory
+```
+python main.py
+```
+
+That's all :)
+
 ## How does it work?
 The moment you click on your account in LCM, LeagueClient is running and then app takes your mouse and keyboard to log into client for you with credentials you just selected.
 When you want to change account LCM closes every process related to League of Legends and then runs new one and logs automatically with new credentials.
 
-## Version 1.1 Update:
+## Version 1.2 Update:
 * Option to add and delete accounts
 * GUI overhaul, it's still in progress
+* Change language of the client (Any language supported by League of Legends)
+* Set path to 'Riot Games' directory
 
 ## Important things!
 After you click on account you want to play, **dont move your mouse**, because this app can type credentials in different place.
