@@ -170,7 +170,7 @@ class ConfigureModal(QDialog):
         self.languages_list.addItems(list(LANGUAGES.keys()))
         self.languages_list.setCurrentText(self.manager.language)
 
-        self.path_button = QPushButton(icon=QtGui.QIcon('..\\assets\\directory_icon.png'))
+        self.path_button = QPushButton(icon=QtGui.QIcon('assets\\directory_icon.png'))
         self.path_button.clicked.connect(self.open_file_explorer)
         self.path = QLabel(RIOT_GAMES_PATH)
 

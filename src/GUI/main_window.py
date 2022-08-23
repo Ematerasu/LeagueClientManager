@@ -100,7 +100,7 @@ class GUIManager(QMainWindow):
         self.manager.run(login, password)
 
     def closeEvent(self, event):
-        self.manager.cleanupProcesses()
+        self.manager.shut_down_client()
         event.accept()
 
     def add_account_modal(self):

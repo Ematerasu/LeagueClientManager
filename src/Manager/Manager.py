@@ -17,6 +17,9 @@ class Manager:
     SECS_BETWEEN_KEYS = 0.01
 
     def __init__(self):
+        if not os.path.exists(os.path.relpath('config')):
+            os.mkdir('config')
+
         self.data = self.load_json()
         self.sort_data()
         self.arguments = []
@@ -24,7 +27,7 @@ class Manager:
 
     def run(self, login, password):
         # clean up processes and start from scratch, its easier            
-        self.cleanupProcesses()
+        self.shut_down_client()
 
         pid = self.run_league_client()
         debug(f'PID of league client: {pid}')
@@ -43,7 +46,7 @@ class Manager:
         menu_icon = None
         while menu_icon is None:
             try:
-                menu_icon = pyautogui.locateOnScreen('..\\assets\\main_menu.png', grayscale=False, confidence=0.9)
+                menu_icon = pyautogui.locateOnScreen('assets\\main_menu.png', grayscale=False)
             except ImageNotFoundException:
                 sleep(0.5)
 
@@ -56,8 +59,8 @@ class Manager:
 
     def confirm(self):
         sleep(0.1)
-        location = pyautogui.center(pyautogui.locateOnScreen('..\\assets\\enter.png', confidence=0.8))
-        pyautogui.click(x=location.x, y=location.y, _pause=False)
+        pyautogui.press('tab', _pause=False, presses=5)
+        pyautogui.press('enter', _pause=False)
 
     def monitor_league_client(self):
         sleep(5) # need to wait for new league client process, idk why is it like that
@@ -86,17 +89,21 @@ class Manager:
 
     def sign_out(self):
         sleep(1)
-        location = pyautogui.center(pyautogui.locateOnScreen('..\\assets\\close_client.png', grayscale=False, confidence=0.8))
+        location = pyautogui.center(pyautogui.locateOnScreen('assets\\close_client.png', grayscale=False))
         pyautogui.click(x=location.x, y=location.y, _pause=False)
         sleep(1)
-        location = pyautogui.center(pyautogui.locateOnScreen('..\\assets\\sign_out.png', confidence=0.7))
+        location = pyautogui.center(pyautogui.locateOnScreen('assets\\sign_out.png'))
         pyautogui.click(x=location.x, y=location.y, _pause=False)
 
 
     def shut_down_client(self):
         sleep(1)
+        self_pid = os.getpid()
         for proc in psutil.process_iter(['pid', 'name']):
-            if 'league' in proc.info['name'].lower():
+            if proc.info['pid'] == self_pid:
+                continue
+            if 'league' in proc.info['name'].lower() or 'riotclient' in proc.info['name'].lower():
+                debug(proc.info['name'])
                 proc.terminate()
                 debug(f'Shut down process {proc.info}')
         debug('shut down finished')
@@ -132,12 +139,6 @@ class Manager:
         with open(DATA_PATH, 'w') as f:
             f.write(json.dumps(self.data, indent=4, sort_keys=True))
 
-    def cleanupProcesses(self):
-        for proc in psutil.process_iter(['pid', 'name', 'username']):
-                name = proc.info['name'].lower()
-                if 'league' in name or 'riot' in name:
-                    proc.terminate()
-
     def sort_data(self):
         self.data = dict(sorted(self.data.items()))
 
@@ -156,6 +157,8 @@ class Manager:
 
         with open(CONFIG_PATH, 'w') as f:
             yaml.dump(configs, f)
+
+        self.language = language
 
     def get_current_language(self):
         with open(CONFIG_PATH, 'r') as f:
