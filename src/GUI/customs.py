@@ -200,10 +200,12 @@ class ConfigureModal(QDialog):
         self.close()
 
     def open_file_explorer(self):
-        dirname = QFileDialog.getExistingDirectory(self,
-                                                    'Riot Games directory path',
-                                                    RIOT_GAMES_PATH,
-                                                    QFileDialog.ShowDirsOnly | QFileDialog.DontResolveSymlinks)
+        dirname = QFileDialog.getExistingDirectory(
+            self,
+            'Riot Games directory path',
+            RIOT_GAMES_PATH,
+            QFileDialog.ShowDirsOnly | QFileDialog.DontResolveSymlinks
+        )
 
         if dirname:
             self.path.setText(dirname)

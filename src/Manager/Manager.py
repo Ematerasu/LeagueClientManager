@@ -12,20 +12,34 @@ from utils import LANGUAGES, debug
 from config import DATA_PATH, LEAGUE_PATH, CONFIG_PATH
 
 class Manager:
-
+    """_summary_
+        Main class for manager, contains all functions that run
+        LeagueClient and log user in
+    """
     pyautogui.PAUSE = 2.5
     SECS_BETWEEN_KEYS = 0.01
 
     def __init__(self):
+
+        # if folder for json's doesn't exist -> create it
         if not os.path.exists(os.path.relpath('config')):
             os.mkdir('config')
 
+        #load accounts, sort them (visual upgrade)
         self.data = self.load_json()
         self.sort_data()
+        # language settings
         self.arguments = []
         self.language = self.get_current_language()
 
     def run(self, login, password):
+        """_summary_
+            run LeagueClient and log user in
+        Args:
+            login (string): user's login
+            password (string): user's password
+        """
+
         # clean up processes and start from scratch, its easier            
         self.shut_down_client()
 
@@ -37,11 +51,25 @@ class Manager:
         self.confirm()
     
     def run_league_client(self):
+        """_summary_
+            Simply run league client
+        Returns:
+            int: pid of league client, for now we only use it for debug purposes
+            because after login this process ends and starts new one (that's weird but es como es)
+        """        
         x = subprocess.Popen([LEAGUE_PATH, *self.arguments])
 
         return x.pid
 
     def type_username(self, login):
+        """_summary_
+            Wait for league client to pop up on screen, we do this by waiting for
+            main_menu jpg (check assets folder), we can't just check processes because it takes some time
+            till we can type login
+        Args:
+            login (string): user's login
+        """        
+
         # wait for client to pop up on screen
         menu_icon = None
         while menu_icon is None:
@@ -61,40 +89,6 @@ class Manager:
         sleep(0.1)
         pyautogui.press('tab', _pause=False, presses=5)
         pyautogui.press('enter', _pause=False)
-
-    def monitor_league_client(self):
-        sleep(5) # need to wait for new league client process, idk why is it like that
-        client_pid = -1
-        found_client = False
-        while not found_client:
-            for proc in psutil.process_iter(['pid', 'name', 'username']):
-                if proc.info['name'] == 'LeagueClient.exe': 
-                    client_pid = proc.info['pid']
-                    debug(f'Found League client pid: {client_pid}')
-                    found_client = True
-                    break
-            sleep(2)
-
-        client_exists = True
-        while client_exists:
-            client_exists = False
-            for proc in psutil.process_iter(['pid', 'name', 'username']):
-                if proc.info['name'] == 'LeagueClient.exe': 
-                    client_pid = proc.info['pid']
-                    debug(f'Client exists: {client_pid}')
-                    client_exists = True
-            sleep(2)
-        debug(f'Client closed')
-        sleep(1)
-
-    def sign_out(self):
-        sleep(1)
-        location = pyautogui.center(pyautogui.locateOnScreen('assets\\close_client.png', grayscale=False))
-        pyautogui.click(x=location.x, y=location.y, _pause=False)
-        sleep(1)
-        location = pyautogui.center(pyautogui.locateOnScreen('assets\\sign_out.png'))
-        pyautogui.click(x=location.x, y=location.y, _pause=False)
-
 
     def shut_down_client(self):
         sleep(1)
@@ -116,6 +110,11 @@ class Manager:
         return False
 
     def load_json(self):
+        """_summary_
+            load accounts from json, if json doesn't exists then create empty one
+        Returns:
+            _type_: _description_
+        """        
         if os.path.isfile(DATA_PATH):
             data = {}
             with open(DATA_PATH, 'r') as f:
@@ -143,6 +142,13 @@ class Manager:
         self.data = dict(sorted(self.data.items()))
 
     def change_language(self, language):
+        """_summary_
+            Change yaml config file, you can check its structure (path in config.py) and add argument to use when running league client process
+            which is -locale={language} flag
+            In yaml file all we need to do is change two variables as coded below
+        Args:
+            language (string): name of language
+        """        
         if language == self.language:
             debug('Language is the same as the current language')
             return
