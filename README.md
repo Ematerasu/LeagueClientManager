@@ -13,7 +13,10 @@ combinations so this app is quite useful for me. Hopefully it will be useful for
     * pyautogui
     * PySide6
 
-## How to run locally
+## How to run this app?
+Download from my google disc: https://drive.google.com/file/d/1tIxCJ_UnT1H_QKI_Ieqlic7tp5DA2L_I/view?usp=sharing, unzip and run LCM.exe (make shortcut on Desktop or anywhere you want)
+
+## How to run locally with python
 I intend to make an exe file from this. But if you clone this repo you need to install the requirements with
 ```
 pip install -r requirements.txt

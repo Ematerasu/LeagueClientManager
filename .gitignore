@@ -128,5 +128,6 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
+config
 data.json
 lcm_prod_config.json
