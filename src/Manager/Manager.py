@@ -9,7 +9,7 @@ import pyautogui
 from pyautogui import ImageNotFoundException
 
 from utils import LANGUAGES, debug
-from config import DATA_PATH, LEAGUE_PATH, CONFIG_PATH
+from config import CONFIGS, DATA_PATH, LEAGUE_PATH, CONFIG_PATH
 
 class Manager:
     """_summary_
@@ -20,11 +20,6 @@ class Manager:
     SECS_BETWEEN_KEYS = 0.01
 
     def __init__(self):
-
-        # if folder for json's doesn't exist -> create it
-        if not os.path.exists(os.path.relpath('config')):
-            os.mkdir('config')
-
         #load accounts, sort them (visual upgrade)
         self.data = self.load_json()
         self.sort_data()
@@ -167,7 +162,10 @@ class Manager:
         self.language = language
 
     def get_current_language(self):
-        with open(CONFIG_PATH, 'r') as f:
+        with open(CONFIGS, 'r') as f:
+            path = f.read()
+            RIOT_GAMES_PATH = path
+        with open(RIOT_GAMES_PATH + 'League of Legends\Config\\LeagueClientSettings.yaml', 'r') as f:
             configs = yaml.safe_load(f)
             language = configs['install']['globals']['locale']
 

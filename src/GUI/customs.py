@@ -12,7 +12,7 @@ from PySide6.QtWidgets import (
 )
 from PySide6.QtCore import QSize, Qt
 from PySide6 import QtGui
-from config import RIOT_GAMES_PATH
+from config import CONFIGS, RIOT_GAMES_PATH
 
 from utils import LANGUAGES
 
@@ -200,6 +200,9 @@ class ConfigureModal(QDialog):
         self.close()
 
     def open_file_explorer(self):
+        with open(CONFIGS, 'r') as f:
+            path = f.read()
+            RIOT_GAMES_PATH = path
         dirname = QFileDialog.getExistingDirectory(
             self,
             'Riot Games directory path',
@@ -210,3 +213,5 @@ class ConfigureModal(QDialog):
         if dirname:
             self.path.setText(dirname)
             RIOT_GAMES_PATH = dirname
+            with open(CONFIGS, 'w') as f:
+                f.write(dirname)
