@@ -9,7 +9,7 @@ import pyautogui
 from pyautogui import ImageNotFoundException
 
 from utils import LANGUAGES, debug
-from config import CONFIGS, DATA_PATH, LEAGUE_PATH, CONFIG_PATH
+from config import CONFIGS, DATA_PATH
 
 class Manager:
     """_summary_
@@ -20,6 +20,16 @@ class Manager:
     SECS_BETWEEN_KEYS = 0.01
 
     def __init__(self):
+        # Paths to LeagueClient and yaml config
+        self.RIOT_GAMES_PATH = 'C:\\Riot Games\\' # default
+        self.LEAGUE_PATH = 'League of Legends\\LeagueClient.exe'
+        self.CONFIG_PATH = 'League of Legends\Config\\LeagueClientSettings.yaml'
+
+        with open(CONFIGS, 'r') as f:
+            path = f.read()
+            debug(path)
+            self.RIOT_GAMES_PATH = path
+
         #load accounts, sort them (visual upgrade)
         self.data = self.load_json()
         self.sort_data()
@@ -51,8 +61,9 @@ class Manager:
         Returns:
             int: pid of league client, for now we only use it for debug purposes
             because after login this process ends and starts new one (that's weird but es como es)
-        """        
-        x = subprocess.Popen([LEAGUE_PATH, *self.arguments])
+        """
+        debug(f'League path {self.RIOT_GAMES_PATH + self.LEAGUE_PATH}') 
+        x = subprocess.Popen([self.RIOT_GAMES_PATH + self.LEAGUE_PATH, *self.arguments])
 
         return x.pid
 
@@ -150,22 +161,19 @@ class Manager:
 
         self.arguments.append(f'–locale={LANGUAGES[language]}')
 
-        with open(CONFIG_PATH, 'r') as f:
+        with open(self.CONFIG_PATH, 'r') as f:
             configs = yaml.safe_load(f)
         
         configs['install']['globals']['locale'] = LANGUAGES[language]
         configs['install']['patcher']['locales'] = [LANGUAGES[language]]
 
-        with open(CONFIG_PATH, 'w') as f:
+        with open(self.CONFIG_PATH, 'w') as f:
             yaml.dump(configs, f)
 
         self.language = language
 
     def get_current_language(self):
-        with open(CONFIGS, 'r') as f:
-            path = f.read()
-            RIOT_GAMES_PATH = path
-        with open(RIOT_GAMES_PATH + 'League of Legends\Config\\LeagueClientSettings.yaml', 'r') as f:
+        with open(self.RIOT_GAMES_PATH + self.CONFIG_PATH, 'r') as f:
             configs = yaml.safe_load(f)
             language = configs['install']['globals']['locale']
 

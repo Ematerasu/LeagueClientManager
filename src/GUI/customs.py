@@ -1,3 +1,5 @@
+import os
+import sys
 from PySide6.QtWidgets import (
     QCheckBox,
     QComboBox,
@@ -10,11 +12,11 @@ from PySide6.QtWidgets import (
     QPushButton,
     QVBoxLayout,
 )
-from PySide6.QtCore import QSize, Qt
+from PySide6.QtCore import QSize, Qt, QCoreApplication
 from PySide6 import QtGui
-from config import CONFIGS, RIOT_GAMES_PATH
+from config import CONFIGS
 
-from utils import LANGUAGES
+from utils import LANGUAGES, debug, find_in_all_drives, remove_garbage
 
 class AccountButton(QPushButton):
 
@@ -172,7 +174,7 @@ class ConfigureModal(QDialog):
 
         self.path_button = QPushButton(icon=QtGui.QIcon('assets\\directory_icon.png'))
         self.path_button.clicked.connect(self.open_file_explorer)
-        self.path = QLabel(RIOT_GAMES_PATH)
+        self.path = QLabel(self.manager.RIOT_GAMES_PATH)
 
         self.setUpUI()
 
@@ -202,16 +204,56 @@ class ConfigureModal(QDialog):
     def open_file_explorer(self):
         with open(CONFIGS, 'r') as f:
             path = f.read()
-            RIOT_GAMES_PATH = path
+            self.manager.RIOT_GAMES_PATH = path
         dirname = QFileDialog.getExistingDirectory(
             self,
             'Riot Games directory path',
-            RIOT_GAMES_PATH,
+            self.manager.RIOT_GAMES_PATH,
             QFileDialog.ShowDirsOnly | QFileDialog.DontResolveSymlinks
         )
 
         if dirname:
             self.path.setText(dirname)
-            RIOT_GAMES_PATH = dirname
+            self.manager.RIOT_GAMES_PATH = dirname
             with open(CONFIGS, 'w') as f:
                 f.write(dirname)
+
+
+class InstallationModal(QDialog):
+
+    def __init__(self, parent):
+        super(InstallationModal, self).__init__(parent)
+        self.setModal(True)
+        self.setWindowTitle("Installation")
+        self.setMinimumSize(QSize(150, 70))
+        layout = QVBoxLayout(self)
+        layout.setContentsMargins(10, 0, 0, 0)
+        label = QLabel('.', self)
+        layout.addWidget(label)
+        self.show()
+        label.setText("Installing...")
+
+        QCoreApplication.processEvents() # not the best solution but only that works for me
+        # here it should be quite safe to unlock events, we do it only once and we unblock them only for this modal
+
+        self.find_league_path()
+
+        label.setText('Installation finished!')
+        buttons = QDialogButtonBox(QDialogButtonBox.Ok)
+        buttons.accepted.connect(self.save)
+        layout.addWidget(buttons)
+
+    def find_league_path(self):
+        if not os.path.isfile(CONFIGS):
+            with open(CONFIGS, 'w') as f:
+                path = find_in_all_drives('LeagueClient.exe')
+                debug(path)
+                if path is None:
+                    sys.exit(0)
+                path = path.split('\\')
+                riot_games_path = remove_garbage(path)
+                debug(riot_games_path)
+                f.write('\\'.join(riot_games_path)+'\\')
+
+    def save(self):
+        self.close()

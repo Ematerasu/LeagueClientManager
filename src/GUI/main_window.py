@@ -1,8 +1,9 @@
+import os
 import webbrowser
 
 import pyautogui
 from PySide6 import QtCore
-from PySide6.QtWidgets import (QMainWindow, QHBoxLayout, QWidget, QVBoxLayout)
+from PySide6.QtWidgets import (QMainWindow, QHBoxLayout, QWidget, QVBoxLayout, QDialog)
 from PySide6.QtCore import (QSize,)
 
 from Manager.Manager import Manager
@@ -15,10 +16,12 @@ from GUI.customs import (
     DeleteAccountButton,
     DeleteAccountModal,
     GithubButton,
+    InstallationModal,
     RefreshButton,
 )
 
 from utils import debug
+from config import CONFIGS
 
 class GUIManager(QMainWindow):
 
@@ -27,7 +30,12 @@ class GUIManager(QMainWindow):
 
     def __init__(self):
         super(GUIManager, self).__init__()
-        self.manager = Manager()
+        if not os.path.isfile(CONFIGS):
+            dialog = InstallationModal(self)
+            dialog.exec_()
+            self.manager = Manager()
+        else:
+            self.manager = Manager()
 
         self.setWindowFlags(QtCore.Qt.WindowCloseButtonHint | QtCore.Qt.WindowMinimizeButtonHint)
         self.setWindowTitle("LeagueClientManager")
