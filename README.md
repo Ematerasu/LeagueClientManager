@@ -1,6 +1,8 @@
 # League Client Manager v1.2
 
-![](https://i.imgur.com/iaJR4mC.png)
+<p align="center">
+  <img src="https://i.imgur.com/iaJR4mC.png">
+</p>
 
 ## What is it?
 App that automates logging in League of Legends client. Especially useful when changing accounts.
