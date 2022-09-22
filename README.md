@@ -18,7 +18,8 @@ combinations so this app is quite useful for me. Hopefully it will be useful for
     * PySide6
 
 ## How to run this app?
-Download from my google disc: https://drive.google.com/file/d/1tIxCJ_UnT1H_QKI_Ieqlic7tp5DA2L_I/view?usp=sharing, unzip and run LCM.exe (make shortcut on Desktop or anywhere you want)
+Download from my google disc: https://drive.google.com/file/d/1tIxCJ_UnT1H_QKI_Ieqlic7tp5DA2L_I/view?usp=sharing, unzip and run LCM.exe (make shortcut on Desktop or anywhere you want).
+
 When running first time it will automatically locate League of Legends on your computer.
 
 ## How to run locally with python
