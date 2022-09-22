@@ -1,5 +1,7 @@
 # League Client Manager v1.2
 
+![](https://i.imgur.com/iaJR4mC.png)
+
 ## What is it?
 App that automates logging in League of Legends client. Especially useful when changing accounts.
 Log in only with one click instead of typing your username and password
@@ -15,6 +17,7 @@ combinations so this app is quite useful for me. Hopefully it will be useful for
 
 ## How to run this app?
 Download from my google disc: https://drive.google.com/file/d/1tIxCJ_UnT1H_QKI_Ieqlic7tp5DA2L_I/view?usp=sharing, unzip and run LCM.exe (make shortcut on Desktop or anywhere you want)
+When running first time it will automatically locate League of Legends on your computer.
 
 ## How to run locally with python
 I intend to make an exe file from this. But if you clone this repo you need to install the requirements with
