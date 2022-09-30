@@ -161,13 +161,13 @@ class Manager:
 
         self.arguments.append(f'–locale={LANGUAGES[language]}')
 
-        with open(self.CONFIG_PATH, 'r') as f:
+        with open(self.RIOT_GAMES_PATH + self.CONFIG_PATH, 'r') as f:
             configs = yaml.safe_load(f)
         
         configs['install']['globals']['locale'] = LANGUAGES[language]
         configs['install']['patcher']['locales'] = [LANGUAGES[language]]
 
-        with open(self.CONFIG_PATH, 'w') as f:
+        with open(self.RIOT_GAMES_PATH + self.CONFIG_PATH, 'w') as f:
             yaml.dump(configs, f)
 
         self.language = language
