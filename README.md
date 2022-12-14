@@ -1,5 +1,8 @@
 # League Client Manager v1.2
 
+# IMPORTANT December 2022
+League client has been updated, another option to log in was introduced and LCM right now doesn't work properly, I know how to fix that but I'm too busy with work and another project so right now this manager isn't fully operable. Language change still work
+---------
 <p align="center">
   <img src="https://i.imgur.com/iaJR4mC.png">
 </p>
